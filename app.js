@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended:false }));
 
 // Url to mongo db atlas
-const url = process.env.Mongo_Url;
+const url = 'mongodb+srv://AmitKarnam:OyuJo9QRqNEnRGN6@cluster0.rb1uc.mongodb.net/NoteBookDatabase?retryWrites=true&w=majority';
 
 //Connecting to Database
 mongoose.connect(url).then( () => {
