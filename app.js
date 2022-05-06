@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const sors = require('cors');
+
+const auth = require("./middleware/auth");
 
 // The dotenv.config() function from the dotenv npm package will read the .env file, assign the variables to process.env, and 
 // return an object (named parsed) containing the content. it will also throw an error if it failed.
@@ -14,9 +17,10 @@ const api_routes = require('./routes/api');
 
 const app = express();
 
-//Body parser middleware
+//Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended:false }));
+app.use(cors());
 
 // Url to mongo db atlas
 const url = process.env.Mongo_Url;
@@ -45,7 +49,7 @@ app.post("/register" ,async (req,res) => {
         const oldUser = await User.findOne({email});
 
         if(oldUser){
-            return res.status(400).json({msg:"User Already Exist. Please Login"});
+            return res.status(409).json({msg:"User Already Exist. Please Login"});
         }
 
         encryptedUserPasswd = await bcrypt.hash(password,10);
@@ -63,9 +67,10 @@ app.post("/register" ,async (req,res) => {
             process.env.TOKEN_KEY,
             {
                 expiresIn : "5h",
-            }
+            }   
         );
 
+        // save user token
         user.token = token;
 
         res.status(201).json(user);
@@ -102,7 +107,11 @@ app.post("/login", async (req,res) => {
         return res.status(400).json({msg:"Invalid Credentials"});
 
     }
-)
+);
+
+app.post("/welcome", auth , (req,res) => {
+    res.status(200).send("Welcome to Note Book.");
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

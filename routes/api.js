@@ -14,11 +14,10 @@ api_router.get('/',async(req,res) => {
 //API end point to GET a particular record from database and provide it in a json response format
 api_router.get('/:id',async(req,res) => {
     const record = await books.findById(req.params.id);
-    //console.log(typeof(record))
     res.send(record);
 });
 
-//API end point to POST a particular record 
+//POST method to validate new record creation with required fields and avoid data integrity issues in record creation.
 api_router.post('/' , function (req,res,next)  {
     const newBook = new books( {
         book_title : req.body.book_title,
